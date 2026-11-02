@@ -1,0 +1,20 @@
+
+name: Check build server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check disk and memory
+        run: |
+          echo "=== DISK SPACE ==="
+          df -h /
+          echo "=== MEMORY ==="
+          free -h
+          echo "=== CPU ==="
+          nproc
+          echo "=== RUNNER ==="
+          uname -a
