@@ -1,20 +1,52 @@
 
-name: Check build server
+name: Build TWRP for OPPO A53
 
 on:
   workflow_dispatch:
 
 jobs:
-  check:
+  build:
     runs-on: ubuntu-24.04
     steps:
-      - name: Check disk and memory
+      - name: Install dependencies
         run: |
-          echo "=== DISK SPACE ==="
-          df -h /
-          echo "=== MEMORY ==="
-          free -h
-          echo "=== CPU ==="
-          nproc
-          echo "=== RUNNER ==="
-          uname -a
+          sudo apt-get update
+          sudo apt-get install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python3
+
+      - name: Install repo tool
+        run: |
+          mkdir -p "$HOME/bin"
+          curl -L https://storage.googleapis.com/git-repo-downloads/repo -o "$HOME/bin/repo"
+          chmod a+x "$HOME/bin/repo"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+
+      - name: Download TWRP sources
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/twrp"
+          cd "$GITHUB_WORKSPACE/twrp"
+          repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
+          repo sync -c --no-tags --no-clone-bundle -j4
+
+      - name: Download OPPO A53 device tree
+        run: |
+          cd "$GITHUB_WORKSPACE/twrp"
+          git clone --depth=1 -b main https://github.com/and50856-lab/android_device_oppo_soda-twrp.git device/oppo/PDVM00
+
+      - name: Build recovery
+        run: |
+          cd "$GITHUB_WORKSPACE/twrp"
+          export ALLOW_MISSING_DEPENDENCIES=true
+          source build/envsetup.sh
+          lunch twrp_PDVM00-eng
+          mka recoveryimage -j4
+
+      - name: Check output
+        run: |
+          ls -lh "$GITHUB_WORKSPACE/twrp/out/target/product/PDVM00/recovery.img"
+
+      - name: Upload recovery image
+        uses: actions/upload-artifact@v4
+        with:
+          name: OPPO-A53-TWRP
+          path: twrp/out/target/product/PDVM00/recovery.img
+          if-no-files-found: error
