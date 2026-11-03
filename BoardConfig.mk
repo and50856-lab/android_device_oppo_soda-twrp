@@ -1,28 +1,18 @@
+
 #
 # Copyright (C) 2022 The Android Open Source Project
 # Copyright (C) 2022 Team Win Recovery Project
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Licensed under the Apache License, Version 2.0
 #
 
-#
 # SPDX-License-Identifier: Apache-2.0
-#
 
 DEVICE_PATH := device/oppo/PDVM00
 
-# For building with minimal manifest
+# Build
 SOONG_ALLOW_MISSING_DEPENDENCIES := true
+BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
 
 # Architecture
 TARGET_ARCH := arm64
@@ -38,11 +28,10 @@ TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := cortex-a73
 
-# Build
-BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
-
-# Assert
+# Device
 TARGET_OTA_ASSERT_DEVICE := PDVM00
+TARGET_BOARD_PLATFORM := bengal
+TARGET_BOOTLOADER_BOARD_NAME := bengal
 
 # File systems
 BOARD_HAS_LARGE_FILESYSTEM := true
@@ -50,7 +39,6 @@ BOARD_RECOVERYIMAGE_PARTITION_SIZE := 100663296
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
 
-# File systems
 TARGET_USERIMAGES_USE_EXT4 := true
 TARGET_USERIMAGES_USE_F2FS := true
 TARGET_COPY_OUT_VENDOR := vendor
@@ -62,6 +50,7 @@ TW_INCLUDE_CRYPTO_FBE := true
 BOARD_USES_METADATA_PARTITION := true
 BOARD_USES_QCOM_FBE_DECRYPTION := true
 TW_USE_FSCRYPT_POLICY := 2
+
 PLATFORM_SECURITY_PATCH := 2024-02-05
 PLATFORM_VERSION := 11
 VENDOR_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
@@ -87,32 +76,32 @@ BOARD_KERNEL_CMDLINE += msm_rtb.filter=0x237
 BOARD_KERNEL_CMDLINE += service_locator.enable=1
 BOARD_KERNEL_CMDLINE += swiotlb=2048
 BOARD_KERNEL_CMDLINE += loop.max_part=7
-BOARD_KERNEL_CMDLINE += androidboot.selinux=permissive
 
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/Image.gz
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
 BOARD_PREBUILT_DTBOIMAGE := $(DEVICE_PATH)/prebuilt/dtbo.img
 BOARD_INCLUDE_RECOVERY_DTBO := true
+
 BOARD_BOOTIMG_HEADER_VERSION := 2
 BOARD_KERNEL_BASE := 0x00000000
 BOARD_KERNEL_PAGESIZE := 4096
 BOARD_KERNEL_OFFSET := 0x00008000
 BOARD_RAMDISK_OFFSET := 0x01000000
 BOARD_KERNEL_TAGS_OFFSET := 0x00000100
-BOARD_FLASH_BLOCK_SIZE := 262144 # (BOARD_KERNEL_PAGESIZE * 64)
+BOARD_FLASH_BLOCK_SIZE := 262144
+
 BOARD_MKBOOTIMG_ARGS += --ramdisk_offset $(BOARD_RAMDISK_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --tags_offset $(BOARD_KERNEL_TAGS_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
+
 BOARD_KERNEL_IMAGE_NAME := Image.gz
 TARGET_KERNEL_ARCH := arm64
 
-# Platform
-TARGET_BOARD_PLATFORM := bengal
-TARGET_BOOTLOADER_BOARD_NAME := bengal
-
 # Recovery
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
+TARGET_SCREEN_WIDTH := 720
+TARGET_SCREEN_HEIGHT := 1600
 
 # Logging
 TWRP_INCLUDE_LOGCAT := true
@@ -132,10 +121,9 @@ TW_RECOVERY_ADDITIONAL_RELINK_LIBRARY_FILES += \
     $(TARGET_OUT_SHARED_LIBRARIES)/libion.so \
     $(TARGET_OUT_SHARED_LIBRARIES)/libxml2.so
 
-# Partitions
+# Dynamic partitions
 BOARD_SUPER_PARTITION_GROUPS := oppo_dynamic_partitions
 BOARD_SUPER_PARTITION_SIZE := 9126805504
-# BOARD_Oppo_DYNAMIC_PARTITIONS_SIZE is set to BOARD_SUPER_PARTITION_SIZE / 2 - 4MB
 BOARD_OPPO_DYNAMIC_PARTITIONS_SIZE := 4559208448
 BOARD_OPPO_DYNAMIC_PARTITIONS_PARTITION_LIST := system vendor product system_ext
 
@@ -147,24 +135,24 @@ TW_USE_TOOLBOX := true
 TW_INCLUDE_NTFS_3G := true
 TARGET_RECOVERY_QCOM_RTC_FIX := true
 TW_EXCLUDE_DEFAULT_USB_INIT := true
+
 TW_BRIGHTNESS_PATH := "/sys/class/backlight/panel0-backlight/brightness"
 TARGET_USE_CUSTOM_LUN_FILE_PATH := /config/usb_gadget/g1/functions/mass_storage.0/lun.%d/file
-TARGET_SCREEN_WIDTH := 720
-TARGET_SCREEN_HEIGHT := 1600
+
 TW_INPUT_BLACKLIST := "hbtp_vm"
 TW_INCLUDE_RESETPROP := true
 TW_INCLUDE_LIBRESETPROP := true
-#TWRP Display Configuration
-TW_INCLUDE_LIBDRM := true
-TW_USE_DRM := true
-TW_OVERRIDE_SYSTEM_PROPS := \
-    "ro.build.date.utc;ro.build.product;ro.build.fingerprint=ro.system.build.fingerprint;ro.build.version.incremental;ro.product.device=ro.product.system.device;ro.product.model=ro.product.system.model;ro.product.name=ro.product.system.name"
 
-# Vibrator
-TW_SUPPORT_INPUT_AIDL_HAPTICS := true
+# Display
 TW_INCLUDE_LIBDRM := true
 TW_USE_DRM := true
 TW_NO_SCREEN_BLANK := true
+
+TW_OVERRIDE_SYSTEM_PROPS := \
+    "ro.build.date.utc;ro.build.product;ro.build.fingerprint=ro.system.build.fingerprint;ro.build.version.incremental;ro.product.device=ro.product.system.device;ro.product.model=ro.product.system.model;ro.product.name=ro.product.system.name"
+
+# Haptics
 TW_SUPPORT_INPUT_AIDL_HAPTICS := true
-TW_BRIGHTNESS_PATH := "/sys/devices/platform/soc/5e00000.qcom\\x2cmdss_mdp/backlight/panel0-backlight/brightness"
+
+# VINTF
 PRODUCT_ENFORCE_VINTF_MANIFEST := true
