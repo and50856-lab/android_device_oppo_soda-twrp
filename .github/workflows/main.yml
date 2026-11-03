@@ -30,7 +30,7 @@ jobs:
       - name: Download OPPO A53 device tree
         run: |
           cd "$GITHUB_WORKSPACE/twrp"
-          git clone --depth=1 -b main https://github.com/and50856-lab/android_device_oppo_soda-twrp.git device/oppo/PDVM00
+          git clone --depth=1 -b cph2127-review https://github.com/and50856-lab/android_device_oppo_soda-twrp.git device/oppo/PDVM00
 
       - name: Build recovery
         run: |
