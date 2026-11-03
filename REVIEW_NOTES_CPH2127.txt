@@ -1,0 +1,19 @@
+OPPO A53 CPH2127 TWRP — reviewed candidate notes
+
+Applied conservative, evidence-backed edits:
+1. Removed androidboot.slot_suffix from BoardConfig.mk because the supplied device properties show an empty ro.boot.slot_suffix and AB_OTA_UPDATER=false.
+2. Removed slotselect flags from twrp.flags (A-only device).
+3. Removed persist and logo entries because they were absent from the supplied physical partition map.
+4. Added splash and vbmeta_vendor entries because those partitions were present in the supplied map.
+5. Corrected firmware and bt_firmware filesystem declarations to vfat, matching the supplied /proc/mounts output.
+
+NOT VERIFIED / NOT CHANGED:
+- recovery.fstab logical partition definitions and dynamic-partition group sizing.
+- Whether TWRP 12.1 fstab parser accepts the current duplicate EROFS/ext4 alternatives as intended.
+- Actual super partition byte size and logical group metadata.
+- Kernel/DTB/DTBO compatibility with the exact F.31 boot chain; the prebuilt blobs are retained unchanged.
+- FBE decryption. The source README itself calls decryption partially implemented and unstable.
+- AVB signing / recovery image acceptance by this device.
+- No build or device boot test was performed by this archive operation.
+
+This archive is a review candidate, NOT a flashable/validated recovery. Do not flash or fastboot-boot it on the currently locked bootloader. Keep the original known artifact and stock firmware backups.
