@@ -1,36 +1,47 @@
-# TWRP Optimized Recovery FSTAB for oppo PDVM00
-# Compatible with FBE /data and A/B logical partitions
-# Can be safely used in TWRP 3.7+
+# OPPO A53 CPH2127 / OP4EFDL1
+# Snapdragon 460 - Bengal
+# Android 12 / ColorOS 12
+# A-only, Dynamic Partitions
 
-# System / Vendor / Product partitions
-system          /system_root          ext4    ro,barrier=1                            wait,logical,first_stage_mount
-vendor          /vendor          ext4    ro,barrier=1                            wait,logical,first_stage_mount
-product         /product         ext4    ro,barrier=1                            wait,logical,first_stage_mount
-my_product      /my_product      ext4    ro,barrier=1                            wait,logical,first_stage_mount
-my_engineering  /my_engineering  ext4    ro,barrier=1                            wait,logical,first_stage_mount
+# Dynamic logical partitions
+system          /system_root       erofs    ro                                      wait,logical
+system          /system_root       ext4     ro                                      wait,logical
 
-# Cache and Metadata
-/dev/block/by-name/cache       /cache       ext4    noatime,nosuid,nodev,barrier=1,data=ordered    wait,check,first_stage_mount
-/dev/block/by-name/metadata    /metadata    ext4    noatime,nosuid,nodev,discard                   wait,formattable,first_stage_mount,wrappedkey
+system_ext      /system_ext        erofs    ro                                      wait,logical
+system_ext      /system_ext        ext4     ro                                      wait,logical
 
-# Data partition (FBE)
-/dev/block/bootdevice/by-name/userdata                  /data                  f2fs    noatime,nosuid,nodev,discard,reserve_root=32768,resgid=1065,fsync_mode=nobarrier,inlinecrypt   latemount,wait,resize,check,formattable,fileencryption=ice,wrappedkey,quota,reservedsize=128M,sysfs_path=/sys/devices/platform/soc/1d84000.ufshc,checkpoint=fs
-/dev/block/bootdevice/by-name/userdata                  /data                  ext4    noatime,nosuid,nodev,discard,reserve_root=32768,resgid=1065,fsync_mode=nobarrier,inlinecrypt   latemount,wait,resize,check,formattable,fileencryption=ice,wrappedkey,quota,reservedsize=128M,sysfs_path=/sys/devices/platform/soc/1d84000.ufshc,checkpoint=fs
+vendor          /vendor            erofs    ro                                      wait,logical
+vendor          /vendor            ext4     ro                                      wait,logical
 
-# Misc
-/dev/block/bootdevice/by-name/misc  /misc   emmc  defaults   defaults
+product         /product           ext4     ro                                      wait,logical
+product         /product           erofs    ro                                      wait,logical
 
-# External storage and OTG
-/dev/block/mmcblk1p1  /external_sd  vfat  nosuid,nodev  defaults
-/dev/block/sdg1        /usb_otg      vfat  nosuid,nodev  defaults
+odm             /odm               erofs    ro                                      wait,logical
+odm             /odm               ext4     ro                                      wait,logical
 
-# Optional boot/recovery partitions for completeness
-/dev/block/bootdevice/by-name/boot      /boot       emmc  defaults  defaults
-/dev/block/bootdevice/by-name/recovery  /recovery   emmc  defaults  defaults
-/dev/block/bootdevice/by-name/modem     /modem      emmc  defaults  defaults
-/dev/block/bootdevice/by-name/dsp       /dsp        emmc  defaults  defaults
-/dev/block/bootdevice/by-name/logo      /logo       emmc  defaults  defaults
-/dev/block/bootdevice/by-name/aboot     /aboot      emmc  defaults  defaults
-/dev/block/bootdevice/by-name/abootbak  /abootbak   emmc  defaults  defaults
-/dev/block/bootdevice/by-name/tz        /tz         emmc  defaults  defaults
-/dev/block/bootdevice/by-name/tzbak     /tzbak      emmc  defaults  defaults
+my_product      /my_product        erofs    ro                                      wait,logical
+my_product      /my_product        ext4     ro                                      wait,logical
+
+my_engineering  /my_engineering    erofs    ro                                      wait,logical
+my_engineering  /my_engineering    ext4     ro                                      wait,logical
+
+# Cache
+/dev/block/by-name/cache       /cache       ext4    noatime,nosuid,nodev              wait
+
+# Metadata
+/dev/block/by-name/metadata    /metadata    ext4    noatime,nosuid,nodev,discard      wait
+
+# Userdata - FBE / F2FS or EXT4
+/dev/block/by-name/userdata    /data        f2fs    noatime,nosuid,nodev,discard,inlinecrypt    latemount,wait,check,formattable,fileencryption=ice,wrappedkey,quota
+/dev/block/by-name/userdata    /data        ext4    noatime,nosuid,nodev,discard,inlinecrypt    latemount,wait,check,formattable,fileencryption=ice,wrappedkey,quota
+
+# Physical partitions
+/dev/block/by-name/boot        /boot        emmc    defaults    defaults
+/dev/block/by-name/recovery    /recovery    emmc    defaults    defaults
+/dev/block/by-name/dtbo        /dtbo        emmc    defaults    defaults
+/dev/block/by-name/vbmeta      /vbmeta      emmc    defaults    defaults
+/dev/block/by-name/modem       /modem       emmc    defaults    defaults
+/dev/block/by-name/dsp         /dsp         emmc    defaults    defaults
+/dev/block/by-name/tz          /tz          emmc    defaults    defaults
+/dev/block/by-name/splash      /splash      emmc    defaults    defaults
+/dev/block/by-name/misc        /misc        emmc    defaults    defaults
